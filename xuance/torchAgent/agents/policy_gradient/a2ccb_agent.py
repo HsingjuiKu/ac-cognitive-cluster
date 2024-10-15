@@ -5,7 +5,7 @@ import numpy as np
 from xuance.torchAgent.agents import *
 
 
-class A2C_Agent(Agent):
+class A2CCB_Agent(Agent):
     """The implementation of A2C agent.
 
     Args:
@@ -49,7 +49,7 @@ class A2C_Agent(Agent):
                         config.use_advnorm,
                         self.gamma,
                         self.gae_lam)
-        learner = A2C_Learner(policy,
+        learner = A2CCB_Learner(policy,
                               optimizer,
                               scheduler,
                               config.device,
@@ -57,7 +57,7 @@ class A2C_Agent(Agent):
                               config.vf_coef,
                               config.ent_coef,
                               config.clip_grad)
-        super(A2C_Agent, self).__init__(config, envs, policy, memory, learner, device, config.log_dir, config.model_dir)
+        super(A2CCB_Agent, self).__init__(config, envs, policy, memory, learner, device, config.log_dir, config.model_dir)
 
     def _action(self, obs):
         _, dists, vs = self.policy(obs)
