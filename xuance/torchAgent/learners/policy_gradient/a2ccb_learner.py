@@ -1,7 +1,7 @@
 from xuance.torchAgent.learners import *
 
 
-class A2C_Learner(Learner):
+class A2CCB_Learner(Learner):
     def __init__(self,
                  policy: nn.Module,
                  optimizer: torch.optim.Optimizer,
@@ -11,7 +11,7 @@ class A2C_Learner(Learner):
                  vf_coef: float = 0.25,
                  ent_coef: float = 0.005,
                  clip_grad: Optional[float] = None):
-        super(A2C_Learner, self).__init__(policy, optimizer, scheduler, device, model_dir)
+        super(A2CCB_Learner, self).__init__(policy, optimizer, scheduler, device, model_dir)
         self.vf_coef = vf_coef
         self.ent_coef = ent_coef
         self.clip_grad = clip_grad
