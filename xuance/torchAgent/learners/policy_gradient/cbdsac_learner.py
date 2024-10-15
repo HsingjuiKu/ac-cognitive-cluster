@@ -1,5 +1,15 @@
 from xuance.torchAgent.learners import *
+import numpy as np
+import torch
 from xuance.state_categorizer import StateCategorizer
+
+def clipped_softmax(x, beta, k):
+    topk_indices = torch.topk(x, k=k, dim=1).indices
+    clipped_x = torch.full_like(x, float('-inf'))
+    for i, indices in enumerate(topk_indices):
+        clipped_x[i, indices] = x[i, indices]
+    e_x = torch.exp(beta * clipped_x - torch.max(beta * clipped_x, dim=1, keepdim=True).values)
+    return e_x / e_x.sum(dim=1, keepdim=True)
 
 class CBDSAC_Learner(Learner):
     def __init__(self,
@@ -13,21 +23,38 @@ class CBDSAC_Learner(Learner):
         self.gamma = kwargs['gamma']
         self.alpha = kwargs['alpha']
         self.use_automatic_entropy_tuning = kwargs['use_automatic_entropy_tuning']
-        super(CBDSAC_Learner, self).__init__(policy, optimizers, schedulers, device, model_dir)
+        super(SAC_Learner, self).__init__(policy, optimizers, schedulers, device, model_dir)
         if self.use_automatic_entropy_tuning:
             self.target_entropy = kwargs['target_entropy']
             self.log_alpha = nn.Parameter(torch.zeros(1, requires_grad=True, device=device))
             self.alpha = self.log_alpha.exp()
             self.alpha_optimizer = torch.optim.Adam([self.log_alpha], lr=kwargs['lr_policy'])
 
-    def update(self, obs_batch, act_batch, rew_batch, next_batch, terminal_batch, state_categorizer):
+    def update(self, obs_batch, act_batch, rew_batch, next_batch, terminal_batch):
         self.iterations += 1
         act_batch = torch.as_tensor(act_batch, device=self.device)
         rew_batch = torch.as_tensor(rew_batch, device=self.device)
         ter_batch = torch.as_tensor(terminal_batch, device=self.device)
 
+        if state_categorizer.initialized:
+            # beta_dynamic = min(0.5 + 0.00001 * times, 1)
+            beta_dynamic = 1
+            # prior_probs = np.array(
+            #     [state_categorizer.get_action_prob(next_batch[i].cpu().numpy()) for i in range(len(next_batch))])
+            # prior_probs = torch.tensor(prior_probs, device=self.device).float()
+
+            prior_probs = torch.stack(
+                [state_categorizer.get_action_prob(next_batch[i]) for i in range(len(next_batch))])
+            prior_probs = prior_probs.to(self.device).float()
+            clipped_dist = clipped_softmax(targetQ, beta, k)
+            belief_distributions = beta_dynamic * prior_probs + (1 - beta_dynamic) * clipped_dist
+            times += 1
+        else:
+            clipped_dist = clipped_softmax(targetQ, beta, k)
+            belief_distributions = clipped_dist
+            
         # actor update
-        dist, log_pi, policy_q_1, policy_q_2 = self.policy.Qpolicy(obs_batch)
+        log_pi, policy_q_1, policy_q_2 = self.policy.Qpolicy(obs_batch)
         policy_q = torch.min(policy_q_1, policy_q_2).reshape([-1])
         p_loss = (self.alpha * log_pi.reshape([-1]) - policy_q).mean()
         self.optimizer[0].zero_grad()
@@ -37,18 +64,7 @@ class CBDSAC_Learner(Learner):
         # critic update
         action_q_1, action_q_2 = self.policy.Qaction(obs_batch, act_batch)
         log_pi_next, target_q = self.policy.Qtarget(next_batch)
-
-        if state_categorizer.initialized:
-            belief_distributions = [state_categorizer.get_belief_distribution(next_batch[i])[0] for i in range(len(next_batch))]
-            belief_mu = sum(belief_distributions) / len(belief_distributions)
-            belief_distributions = [state_categorizer.get_belief_distribution(next_batch[i])[1] for i in range(len(next_batch))]
-            belief_std2 = sum(belief_distributions) / len(belief_distributions)
-
-            belief_distribution = torch.distributions.Normal(belief_mu, belief_std2)
-        temp = belief_distribution.sample()
-        temp = torch.exp(belief_distribution.log_prob(temp))
         target_value = target_q - self.alpha * log_pi_next.reshape([-1])
-        target_value = target_value * temp.mean(dim=-1)
         backup = rew_batch + (1 - ter_batch) * self.gamma * target_value
         q_loss = F.mse_loss(action_q_1, backup.detach()) + F.mse_loss(action_q_2, backup.detach())
         self.optimizer[1].zero_grad()
