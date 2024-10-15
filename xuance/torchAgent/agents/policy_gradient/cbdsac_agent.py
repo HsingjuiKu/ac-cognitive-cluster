@@ -38,39 +38,14 @@ class CBDSAC_Agent(Agent):
                                       self.n_envs,
                                       config.buffer_size,
                                       config.batch_size)
-        learner = CBDSAC_Learner(policy, optimizer, scheduler, config.device, config.model_dir,
+        learner = CBDSAC_Agent(policy, optimizer, scheduler, config.device, config.model_dir,
                               gamma=config.gamma,
                               tau=config.tau,
                               alpha=config.alpha,
                               use_automatic_entropy_tuning=config.use_automatic_entropy_tuning,
                               target_entropy=-np.prod(self.action_space.shape).item(),
                               lr_policy=config.actor_learning_rate)
-        self.state_categorizer = StateCategorizer(
-            action_dim=self.action_space.shape[0],
-            n_categories=getattr(config, 'n_categories', 10),
-            buffer_size=1000,
-            device=device
-        )
-        
         super(CBDSAC_Agent, self).__init__(config, envs, policy, memory, learner, device, config.log_dir, config.model_dir)
-        self.generate_initial_states()
-
-    def generate_initial_states(self):
-        model_path = "models/sac/torch/BipedalWalker-v3/seed_1_2024_0915_155825/best_model.pth"
-        self.policy2.load_state_dict(torch.load(model_path, map_location=self.device))
-        self.policy2.eval()
-        obs = self.envs.reset()
-        for _ in tqdm(range(1000)):
-            with torch.no_grad():
-                dist, _,_,_ = self.policy2.Qpolicy(obs[0]) # 直接使用原始的obs[0]
-            distribution = torch.distributions.Normal(dist[0], dist[1])
-            action_sample = distribution.sample()[0]
-            action = action_sample.detach().cpu().numpy()
-            actions = [action] * self.n_envs
-
-            next_obs, _, _, _, _ = self.envs.step(actions)
-            self.state_categorizer.add_to_state_buffer(next_obs[0]) # 只取环境返回的第一个元素
-            obs = np.expand_dims(next_obs,axis = 0)
 
     def _action(self, obs):
         _, action = self.policy(obs)
@@ -87,13 +62,10 @@ class CBDSAC_Agent(Agent):
                 acts = [self.action_space.sample() for _ in range(self.n_envs)]
 
             next_obs, rewards, terminals, trunctions, infos = self.envs.step(acts)
-
             self.memory.store(obs, acts, self._process_reward(rewards), terminals, self._process_observation(next_obs))
             if (self.current_step > self.start_training) and (self.current_step % self.train_frequency == 0):
                 obs_batch, act_batch, rew_batch, terminal_batch, next_batch = self.memory.sample()
-                dist, _, _, _ = self.policy.Qpolicy(torch.tensor(obs_batch))
-                self.state_categorizer.update_belief(obs[0], dist)
-                step_info = self.learner.update(obs_batch, act_batch, rew_batch, next_batch, terminal_batch, self.state_categorizer)
+                step_info = self.learner.update(obs_batch, act_batch, rew_batch, next_batch, terminal_batch)
                 self.log_infos(step_info, self.current_step)
 
             self.returns = self.gamma * self.returns + rewards
