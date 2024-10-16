@@ -89,7 +89,7 @@ class ActorMultiCriticPolicy(nn.Module):
                  activation: Optional[ModuleType] = None,
                  activation_action: Optional[ModuleType] = None,
                  device: Optional[Union[str, int, torch.device]] = None):
-        super(ActorCriticPolicy, self).__init__()
+        super(ActorMultiCriticPolicy, self).__init__()
         self.action_dim = action_space.shape[0]
         self.representation = representation
         self.representation_info_shape = representation.output_shapes
