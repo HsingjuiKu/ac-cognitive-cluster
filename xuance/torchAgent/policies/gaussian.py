@@ -105,7 +105,7 @@ class ActorMultiCriticPolicy(nn.Module):
             for _ in range(4)  # Create 4 CriticNet instances
         ])
 
-    def forward(self, observation: Union[np.ndarray, dict], critic_index: int):
+    def forward(self, observation: Union[np.ndarray, dict]):
         """
         Forward pass through the Actor-Critic network.
 
@@ -118,7 +118,9 @@ class ActorMultiCriticPolicy(nn.Module):
         - a: Action output from ActorNet.
         - v: Value output from the selected CriticNet.
         """
-        outputs = self.representation(observation)
+        obs = observation[0]
+        critic_index = observation[1]
+        outputs = self.representation(obs)
         a = self.actor(outputs['state'])
 
         # Select the critic based on the critic_index
