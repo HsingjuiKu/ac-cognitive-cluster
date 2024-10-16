@@ -68,7 +68,8 @@ class CBDSAC_Agent(Agent):
             with torch.no_grad():
                 dist, _,_ = self.policy2.Qpolicy(obs[0]) # 直接使用原始的obs[0]
             distribution = torch.distributions.Normal(dist[0], dist[1])
-            action_sample = distribution.sample()[0]
+            #action_sample = distribution.sample()[0]
+            action_sample = distribution.sample()
             action = action_sample.detach().cpu().numpy()
             actions = [action] * self.n_envs
 
