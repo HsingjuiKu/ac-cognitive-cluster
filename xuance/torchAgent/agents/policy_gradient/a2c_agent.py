@@ -60,6 +60,7 @@ class A2C_Agent(Agent):
         super(A2C_Agent, self).__init__(config, envs, policy, memory, learner, device, config.log_dir, config.model_dir)
 
     def _action(self, obs):
+        #_, dists, vs = self.policy(obs,0)
         _, dists, vs = self.policy(obs)
         acts = dists.stochastic_sample()
         acts = acts.detach().cpu().numpy()
