@@ -60,8 +60,8 @@ class A2C_Agent(Agent):
         super(A2C_Agent, self).__init__(config, envs, policy, memory, learner, device, config.log_dir, config.model_dir)
 
     def _action(self, obs):
-        _, dists, vs = self.policy(obs,0)
-        #_, dists, vs = self.policy(obs)
+        #_, dists, vs = self.policy(obs,0)
+        _, dists, vs = self.policy(obs)
         acts = dists.stochastic_sample()
         acts = acts.detach().cpu().numpy()
         vs = vs.detach().cpu().numpy()
@@ -73,7 +73,8 @@ class A2C_Agent(Agent):
             step_info = {}
             self.obs_rms.update(obs)
             obs = self._process_observation(obs)
-            acts, vals = self._action(obs)
+            observation = [obs,0] #combine two items
+            acts, vals = self._action(observation)
             next_obs, rewards, terminals, trunctions, infos = self.envs.step(acts)
             self.memory.store(obs, acts, self._process_reward(rewards), vals, terminals)
             if self.memory.full:
