@@ -1,5 +1,7 @@
 from xuance.torchAgent.learners import *
 from xuance.state_categorizer import StateCategorizer
+import numpy as np
+import torch
 
 class A2CCB_Learner(Learner):
     def __init__(self,
