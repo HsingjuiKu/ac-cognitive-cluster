@@ -32,6 +32,10 @@ class CBDSAC_Agent(Agent):
         self.action_space = envs.action_space
         self.auxiliary_info_shape = {}
 
+        self.policy2 = policy
+        self.k = config.k
+        
+
         memory = DummyOffPolicyBuffer(self.observation_space,
                                       self.action_space,
                                       self.auxiliary_info_shape,
