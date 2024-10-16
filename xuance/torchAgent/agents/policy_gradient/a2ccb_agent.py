@@ -3,7 +3,10 @@
 # This can be a first RL algorithm code for the starters.
 import numpy as np
 from xuance.torchAgent.agents import *
-
+from xuance.cluster_tool import ClusterTool
+from xuance.torchAgent.learners import *
+from xuance.torchAgent.learners.policy_gradient.a2ccb_learner import *
+from xuance.state_categorizer import StateCategorizer
 
 class A2CCB_Agent(Agent):
     """The implementation of A2C agent.
@@ -33,6 +36,13 @@ class A2CCB_Agent(Agent):
         self.gae_lam = config.gae_lambda
         self.clip_grad = config.clip_grad
 
+        self.beta_t = 0.0
+        self.beta_max = config.beta_max
+        self.beta_step = 0
+        self.k = config.k
+        self.policy2 = policy
+        self.frequency = 0
+
         self.observation_space = envs.observation_space
         self.action_space = envs.action_space
         self.auxiliary_info_shape = {}
@@ -57,10 +67,39 @@ class A2CCB_Agent(Agent):
                               config.vf_coef,
                               config.ent_coef,
                               config.clip_grad)
+        self.state_categorizer = StateCategorizer(
+            action_space=self.action_space.n,
+            n_categories=getattr(config, 'n_categories', 10),
+            buffer_size=10000,
+            device=device
+        )
         super(A2CCB_Agent, self).__init__(config, envs, policy, memory, learner, device, config.log_dir, config.model_dir)
+        # 预加载模型并生成状态
+        self.generate_initial_states()
+    
+    def generate_initial_states(self):
+        model_path = "xuance/torchAgent/agents/qlearning_family/best_model.pth"
+        self.policy2.load_state_dict(torch.load(model_path, map_location=self.device))
+        self.policy2.eval()
+        obs = self.envs.reset()
+        for _ in tqdm(range(10000)):
+            with torch.no_grad():
+                _, action, _ = self.policy2(obs[0],0)  # 直接使用原始的obs[0]
+                action = action.cpu().numpy()
+
+                if action.ndim == 0:
+                    actions = [int(action)] * self.n_envs
+                elif action.ndim == 1:
+                    actions = [int(a) for a in action]
+                else:
+                    raise ValueError(f"Unexpected action shape: {action.shape}")
+
+                next_obs, _, _, _, _ = self.envs.step(actions)
+                self.state_categorizer.add_to_state_buffer(next_obs[0])  # 只取环境返回的第一个元素
+                obs = np.expand_dims(next_obs, axis=0)
 
     def _action(self, obs):
-        _, dists, vs = self.policy(obs)
+        _, dists, vs = self.policy(obs,0)
         acts = dists.stochastic_sample()
         acts = acts.detach().cpu().numpy()
         vs = vs.detach().cpu().numpy()
