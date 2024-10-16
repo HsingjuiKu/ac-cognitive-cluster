@@ -1,5 +1,6 @@
 method_list = {
     'a2c': ['box2d', 'classic_control', 'atari', 'mujoco'],
+    'a2ccb': ['box2d', 'classic_control', 'atari', 'mujoco'],
     'c51': ['box2d', 'classic_control', 'atari'],
     'coma': ['mpe', 'sc2'],
     'dcg': ['mpe', 'sc2'],
