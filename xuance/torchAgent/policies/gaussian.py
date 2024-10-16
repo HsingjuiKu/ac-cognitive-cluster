@@ -77,55 +77,6 @@ class ActorCriticPolicy(nn.Module):
         v = self.critic(outputs['state'])
         return outputs, a, v
 
-#------------ The multiCritic Policy-----------#
-class ActorMultiCriticPolicy(nn.Module):
-    def __init__(self,
-                 action_space: Space,
-                 representation: nn.Module,
-                 actor_hidden_size: Sequence[int] = None,
-                 critic_hidden_size: Sequence[int] = None,
-                 normalize: Optional[ModuleType] = None,
-                 initialize: Optional[Callable[..., torch.Tensor]] = None,
-                 activation: Optional[ModuleType] = None,
-                 activation_action: Optional[ModuleType] = None,
-                 device: Optional[Union[str, int, torch.device]] = None):
-        super(ActorCriticPolicy, self).__init__()
-        self.action_dim = action_space.shape[0]
-        self.representation = representation
-        self.representation_info_shape = representation.output_shapes
-        
-        # Initialize ActorNet
-        self.actor = ActorNet(representation.output_shapes['state'][0], self.action_dim, actor_hidden_size,
-                              normalize, initialize, activation, activation_action, device)
-        
-        # Initialize a list of CriticNet instances
-        self.critics = nn.ModuleList([
-            CriticNet(representation.output_shapes['state'][0], critic_hidden_size,
-                      normalize, initialize, activation, device) 
-            for _ in range(4)  # Create 4 CriticNet instances
-        ])
-
-    def forward(self, observation: Union[np.ndarray, dict], critic_index: int):
-        """
-        Forward pass through the Actor-Critic network.
-
-        Parameters:
-        - observation: Input observation (can be numpy array or dictionary).
-        - critic_index: Index to select which CriticNet to use (0 to 3).
-
-        Returns:
-        - outputs: Representation output from the state.
-        - a: Action output from ActorNet.
-        - v: Value output from the selected CriticNet.
-        """
-        outputs = self.representation(observation)
-        a = self.actor(outputs['state'])
-        
-        # Select the critic based on the critic_index
-        v = self.critics[critic_index](outputs['state'])
-        
-        return outputs, a, v
-#---------------------------------------------------------------------#
 
 class ActorPolicy(nn.Module):
     def __init__(self,

@@ -32,10 +32,6 @@ class CBDSAC_Agent(Agent):
         self.action_space = envs.action_space
         self.auxiliary_info_shape = {}
 
-        self.policy2 = policy
-        self.k = config.k
-        
-
         memory = DummyOffPolicyBuffer(self.observation_space,
                                       self.action_space,
                                       self.auxiliary_info_shape,
@@ -66,10 +62,9 @@ class CBDSAC_Agent(Agent):
         obs = self.envs.reset()
         for _ in tqdm(range(1000)):
             with torch.no_grad():
-                dist, _,_ = self.policy2.Qpolicy(obs[0]) # 直接使用原始的obs[0]
+                dist, _,_,_ = self.policy2.Qpolicy(obs[0]) # 直接使用原始的obs[0]
             distribution = torch.distributions.Normal(dist[0], dist[1])
-            #action_sample = distribution.sample()[0]
-            action_sample = distribution.sample()
+            action_sample = distribution.sample()[0]
             action = action_sample.detach().cpu().numpy()
             actions = [action] * self.n_envs
 

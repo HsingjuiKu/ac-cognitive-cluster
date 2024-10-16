@@ -37,7 +37,6 @@ from .policy_gradient import (
     SPDQN_Agent,
     SAC_Agent,
     SACDIS_Agent,
-    A2CCB_Agent,
     CBDSAC_Agent
 )
 from .qlearning_family import (
@@ -77,7 +76,6 @@ from .multi_agent_rl import (
 REGISTRY = {
     "PG": PG_Agent,
     "A2C": A2C_Agent,
-    "A2CCB":A2CCB_Agent,
     "PPO_Clip": PPOCLIP_Agent,
     "PPO_KL": PPOKL_Agent,
     "PPG": PPG_Agent,
