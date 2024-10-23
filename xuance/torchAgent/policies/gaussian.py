@@ -98,12 +98,18 @@ class ActorMultiCriticPolicy(nn.Module):
         self.actor = ActorNet(representation.output_shapes['state'][0], self.action_dim, actor_hidden_size,
                               normalize, initialize, activation, activation_action, device)
 
-        # Initialize a list of CriticNet instances
-        self.critics = [
-            CriticNet(representation.output_shapes['state'][0], critic_hidden_size,
-                      normalize, initialize, activation, device)
-            for _ in range(4)  # Create 4 CriticNet instances
-        ]
+        # Initialize individual CriticNet instances and store them as attributes and in a list
+        self.critic_1 = CriticNet(representation.output_shapes['state'][0], critic_hidden_size,
+                                  normalize, initialize, activation, device)
+        self.critic_2 = CriticNet(representation.output_shapes['state'][0], critic_hidden_size,
+                                  normalize, initialize, activation, device)
+        self.critic_3 = CriticNet(representation.output_shapes['state'][0], critic_hidden_size,
+                                  normalize, initialize, activation, device)
+        self.critic_4 = CriticNet(representation.output_shapes['state'][0], critic_hidden_size,
+                                  normalize, initialize, activation, device)
+
+        # Store the critic instances in a list
+        self.critics = [self.critic_1, self.critic_2, self.critic_3, self.critic_4]
 
     def forward(self, observation: Union[np.ndarray, dict]):
         """
