@@ -74,7 +74,9 @@ class A2C_Agent(Agent):
             self.obs_rms.update(obs)
             obs = self._process_observation(obs)
             observation = [obs,0] #combine two items
+            print(obs = observation[0])
             acts, vals = self._action(observation)
+            print(acts)
             next_obs, rewards, terminals, trunctions, infos = self.envs.step(acts)
             self.memory.store(obs, acts, self._process_reward(rewards), vals, terminals)
             if self.memory.full:
