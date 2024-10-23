@@ -99,6 +99,7 @@ class ActorMultiCriticPolicy(nn.Module):
                               normalize, initialize, activation, activation_action, device)
 
         # Initialize individual CriticNet instances and store them as attributes and in a list
+        print(critic_hidden_size)
         self.critic_1 = CriticNet(representation.output_shapes['state'][0], critic_hidden_size,
                                   normalize, initialize, activation, device)
         # self.critic_2 = CriticNet(representation.output_shapes['state'][0], critic_hidden_size,
