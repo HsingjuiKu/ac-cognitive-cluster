@@ -59,28 +59,27 @@ class A2C_Agent(Agent):
                               config.clip_grad)
         super(A2C_Agent, self).__init__(config, envs, policy, memory, learner, device, config.log_dir, config.model_dir)
 
-    def _action(self, obs):
+    def _action(self, obs, index):
         #_, dists, vs = self.policy(obs,0)
-        _, dists, vs = self.policy(obs)
+        observation = [obs, index]
+        _, dists, vs = self.policy(observation)
         acts = dists.stochastic_sample()
         acts = acts.detach().cpu().numpy()
         vs = vs.detach().cpu().numpy()
         return acts, vs
 
     def train(self, train_steps):
+        index = 0
         obs = self.envs.buf_obs
         for _ in tqdm(range(train_steps)):
             step_info = {}
             self.obs_rms.update(obs)
             obs = self._process_observation(obs)
-            observation = [obs,0] #combine two items
-            print(obs == observation[0])
-            acts, vals = self._action(observation)
-            print(acts)
+            acts, vals = self._action(obs,index)
             next_obs, rewards, terminals, trunctions, infos = self.envs.step(acts)
             self.memory.store(obs, acts, self._process_reward(rewards), vals, terminals)
             if self.memory.full:
-                _, vals = self._action(self._process_observation(next_obs))
+                _, vals = self._action(self._process_observation(next_obs),index)
                 for i in range(self.n_envs):
                     if terminals[i]:
                         self.memory.finish_path(0.0, i)
@@ -110,7 +109,7 @@ class A2C_Agent(Agent):
                         if terminals[i]:
                             self.memory.finish_path(0, i)
                         else:
-                            _, vals = self._action(self._process_observation(next_obs))
+                            _, vals = self._action(self._process_observation(next_obs),index)
                             self.memory.finish_path(vals[i], i)
                         self.current_episode[i] += 1
                         if self.use_wandb:
@@ -136,7 +135,7 @@ class A2C_Agent(Agent):
         while current_episode < test_episodes:
             self.obs_rms.update(obs)
             obs = self._process_observation(obs)
-            acts, rets = self._action(obs)
+            acts, rets = self._action(obs,index)
             next_obs, rewards, terminals, trunctions, infos = test_envs.step(acts)
             if self.config.render_mode == "rgb_array" and self.render:
                 images = test_envs.render(self.config.render_mode)
