@@ -99,11 +99,11 @@ class ActorMultiCriticPolicy(nn.Module):
                               normalize, initialize, activation, activation_action, device)
 
         # Initialize a list of CriticNet instances
-        self.critics = nn.ModuleList([
+        self.critics = [
             CriticNet(representation.output_shapes['state'][0], critic_hidden_size,
                       normalize, initialize, activation, device)
             for _ in range(4)  # Create 4 CriticNet instances
-        ])
+        ]
 
     def forward(self, observation: Union[np.ndarray, dict]):
         """
