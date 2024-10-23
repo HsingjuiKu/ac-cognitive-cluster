@@ -10,7 +10,7 @@ from .categorical import ActorPolicy as Categorical_Actor_Policy
 from .categorical import PPGActorCritic as Categorical_PPG_Policy
 from .categorical import SACDISPolicy as Categorical_SAC_Policy
 
-from .gaussian import ActorCriticPolicy as Gaussian_AC_Policy
+# from .gaussian import ActorCriticPolicy as Gaussian_AC_Policy
 from .gaussian import ActorPolicy as Gaussian_Actor_Policy
 from .gaussian import PPGActorCritic as Gaussian_PPG_Policy
 from .deterministic import BasicQnetwork, C51Qnetwork, DuelQnetwork, DDPGPolicy, NoisyQnetwork, QRDQN_Network, \
