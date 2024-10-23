@@ -75,12 +75,12 @@ class ActorCriticPolicy(nn.Module):
         print(critic_hidden_size)
         self.critic_1 = CriticNet(representation.output_shapes['state'][0], critic_hidden_size,
                                   normalize, initialize, activation, device)
-        # self.critic_2 = CriticNet(representation.output_shapes['state'][0], critic_hidden_size,
-        #                           normalize, initialize, activation, device)
-        # self.critic_3 = CriticNet(representation.output_shapes['state'][0], critic_hidden_size,
-        #                           normalize, initialize, activation, device)
-        # self.critic_4 = CriticNet(representation.output_shapes['state'][0], critic_hidden_size,
-        #                           normalize, initialize, activation, device)
+        self.critic_2 = CriticNet(representation.output_shapes['state'][0], critic_hidden_size,
+                                  normalize, initialize, activation, device)
+        self.critic_3 = CriticNet(representation.output_shapes['state'][0], critic_hidden_size,
+                                  normalize, initialize, activation, device)
+        self.critic_4 = CriticNet(representation.output_shapes['state'][0], critic_hidden_size,
+                                  normalize, initialize, activation, device)
 
         # Store the critic instances in a list
         self.critics = [self.critic_1, self.critic_2, self.critic_3, self.critic_4]
