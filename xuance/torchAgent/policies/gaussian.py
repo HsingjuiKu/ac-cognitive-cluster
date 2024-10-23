@@ -51,31 +51,75 @@ class CriticNet(nn.Module):
         return self.model(x)[:, 0]
 
 
-# class ActorCriticPolicy(nn.Module):
-#     def __init__(self,
-#                  action_space: Space,
-#                  representation: nn.Module,
-#                  actor_hidden_size: Sequence[int] = None,
-#                  critic_hidden_size: Sequence[int] = None,
-#                  normalize: Optional[ModuleType] = None,
-#                  initialize: Optional[Callable[..., torch.Tensor]] = None,
-#                  activation: Optional[ModuleType] = None,
-#                  activation_action: Optional[ModuleType] = None,
-#                  device: Optional[Union[str, int, torch.device]] = None):
-#         super(ActorCriticPolicy, self).__init__()
-#         self.action_dim = action_space.shape[0]
-#         self.representation = representation
-#         self.representation_info_shape = representation.output_shapes
-#         self.actor = ActorNet(representation.output_shapes['state'][0], self.action_dim, actor_hidden_size,
-#                               normalize, initialize, activation, activation_action, device)
-#         self.critic = CriticNet(representation.output_shapes['state'][0], critic_hidden_size,
-#                                 normalize, initialize, activation, device)
+class ActorCriticPolicy(nn.Module):
+    def __init__(self,
+                 action_space: Space,
+                 representation: nn.Module,
+                 actor_hidden_size: Sequence[int] = None,
+                 critic_hidden_size: Sequence[int] = None,
+                 normalize: Optional[ModuleType] = None,
+                 initialize: Optional[Callable[..., torch.Tensor]] = None,
+                 activation: Optional[ModuleType] = None,
+                 activation_action: Optional[ModuleType] = None,
+                 device: Optional[Union[str, int, torch.device]] = None):
+        super(ActorCriticPolicy, self).__init__()
+        self.action_dim = action_space.shape[0]
+        self.representation = representation
+        self.representation_info_shape = representation.output_shapes
 
-#     def forward(self, observation: Union[np.ndarray, dict]):
-#         outputs = self.representation(observation)
-#         a = self.actor(outputs['state'])
-#         v = self.critic(outputs['state'])
-#         return outputs, a, v
+        # Initialize ActorNet
+        self.actor = ActorNet(representation.output_shapes['state'][0], self.action_dim, actor_hidden_size,
+                              normalize, initialize, activation, activation_action, device)
+
+        # Initialize individual CriticNet instances and store them as attributes and in a list
+        print(critic_hidden_size)
+        self.critic_1 = CriticNet(representation.output_shapes['state'][0], critic_hidden_size,
+                                  normalize, initialize, activation, device)
+        # self.critic_2 = CriticNet(representation.output_shapes['state'][0], critic_hidden_size,
+        #                           normalize, initialize, activation, device)
+        # self.critic_3 = CriticNet(representation.output_shapes['state'][0], critic_hidden_size,
+        #                           normalize, initialize, activation, device)
+        # self.critic_4 = CriticNet(representation.output_shapes['state'][0], critic_hidden_size,
+        #                           normalize, initialize, activation, device)
+
+        # Store the critic instances in a list
+        self.critics = [self.critic_1, self.critic_2, self.critic_3, self.critic_4]
+
+    def forward(self, observation: Union[np.ndarray, dict]):
+        """
+        Forward pass through the Actor-Critic network.
+
+        Parameters:
+        - observation: Input observation (can be numpy array or dictionary).
+        - critic_index: Index to select which CriticNet to use (0 to 3).
+
+        Returns:
+        - outputs: Representation output from the state.
+        - a: Action output from ActorNet.
+        - v: Value output from the selected CriticNet.
+        """
+        obs = observation[0]
+        critic_index = observation[1]
+        outputs = self.representation(obs)
+        a = self.actor(outputs['state'])
+
+        # Select the critic based on the critic_index
+        v = self.critics[critic_index](outputs['state'])
+
+        return outputs, a, v
+    #     self.action_dim = action_space.shape[0]
+    #     self.representation = representation
+    #     self.representation_info_shape = representation.output_shapes
+    #     self.actor = ActorNet(representation.output_shapes['state'][0], self.action_dim, actor_hidden_size,
+    #                           normalize, initialize, activation, activation_action, device)
+    #     self.critic = CriticNet(representation.output_shapes['state'][0], critic_hidden_size,
+    #                             normalize, initialize, activation, device)
+
+    # def forward(self, observation: Union[np.ndarray, dict]):
+    #     outputs = self.representation(observation)
+    #     a = self.actor(outputs['state'])
+    #     v = self.critic(outputs['state'])
+    #     return outputs, a, v
 
 #------------ The multiCritic Policy-----------#
 class ActorMultiCriticPolicy(nn.Module):
