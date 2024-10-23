@@ -51,31 +51,31 @@ class CriticNet(nn.Module):
         return self.model(x)[:, 0]
 
 
-class ActorCriticPolicy(nn.Module):
-    def __init__(self,
-                 action_space: Space,
-                 representation: nn.Module,
-                 actor_hidden_size: Sequence[int] = None,
-                 critic_hidden_size: Sequence[int] = None,
-                 normalize: Optional[ModuleType] = None,
-                 initialize: Optional[Callable[..., torch.Tensor]] = None,
-                 activation: Optional[ModuleType] = None,
-                 activation_action: Optional[ModuleType] = None,
-                 device: Optional[Union[str, int, torch.device]] = None):
-        super(ActorCriticPolicy, self).__init__()
-        self.action_dim = action_space.shape[0]
-        self.representation = representation
-        self.representation_info_shape = representation.output_shapes
-        self.actor = ActorNet(representation.output_shapes['state'][0], self.action_dim, actor_hidden_size,
-                              normalize, initialize, activation, activation_action, device)
-        self.critic = CriticNet(representation.output_shapes['state'][0], critic_hidden_size,
-                                normalize, initialize, activation, device)
+# class ActorCriticPolicy(nn.Module):
+#     def __init__(self,
+#                  action_space: Space,
+#                  representation: nn.Module,
+#                  actor_hidden_size: Sequence[int] = None,
+#                  critic_hidden_size: Sequence[int] = None,
+#                  normalize: Optional[ModuleType] = None,
+#                  initialize: Optional[Callable[..., torch.Tensor]] = None,
+#                  activation: Optional[ModuleType] = None,
+#                  activation_action: Optional[ModuleType] = None,
+#                  device: Optional[Union[str, int, torch.device]] = None):
+#         super(ActorCriticPolicy, self).__init__()
+#         self.action_dim = action_space.shape[0]
+#         self.representation = representation
+#         self.representation_info_shape = representation.output_shapes
+#         self.actor = ActorNet(representation.output_shapes['state'][0], self.action_dim, actor_hidden_size,
+#                               normalize, initialize, activation, activation_action, device)
+#         self.critic = CriticNet(representation.output_shapes['state'][0], critic_hidden_size,
+#                                 normalize, initialize, activation, device)
 
-    def forward(self, observation: Union[np.ndarray, dict]):
-        outputs = self.representation(observation)
-        a = self.actor(outputs['state'])
-        v = self.critic(outputs['state'])
-        return outputs, a, v
+#     def forward(self, observation: Union[np.ndarray, dict]):
+#         outputs = self.representation(observation)
+#         a = self.actor(outputs['state'])
+#         v = self.critic(outputs['state'])
+#         return outputs, a, v
 
 #------------ The multiCritic Policy-----------#
 class ActorMultiCriticPolicy(nn.Module):
