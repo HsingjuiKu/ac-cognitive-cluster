@@ -86,18 +86,6 @@ class ActorCriticPolicy(nn.Module):
         self.critics = [self.critic_1, self.critic_2, self.critic_3, self.critic_4]
 
     def forward(self, observation: Union[np.ndarray, dict]):
-        """
-        Forward pass through the Actor-Critic network.
-
-        Parameters:
-        - observation: Input observation (can be numpy array or dictionary).
-        - critic_index: Index to select which CriticNet to use (0 to 3).
-
-        Returns:
-        - outputs: Representation output from the state.
-        - a: Action output from ActorNet.
-        - v: Value output from the selected CriticNet.
-        """
         obs = observation[0]
         critic_index = observation[1]
         outputs = self.representation(obs)
