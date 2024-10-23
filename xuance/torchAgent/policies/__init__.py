@@ -10,7 +10,7 @@ from .categorical import ActorPolicy as Categorical_Actor_Policy
 from .categorical import PPGActorCritic as Categorical_PPG_Policy
 from .categorical import SACDISPolicy as Categorical_SAC_Policy
 
-# from .gaussian import ActorCriticPolicy as Gaussian_AC_Policy
+from .gaussian import ActorCriticPolicy as Gaussian_AC_Policy
 from .gaussian import ActorPolicy as Gaussian_Actor_Policy
 from .gaussian import PPGActorCritic as Gaussian_PPG_Policy
 from .deterministic import BasicQnetwork, C51Qnetwork, DuelQnetwork, DDPGPolicy, NoisyQnetwork, QRDQN_Network, \
@@ -43,7 +43,7 @@ REGISTRY = {
     "Categorical_AC": Categorical_AC_Policy,
     "Categorical_Actor": Categorical_Actor_Policy,
     "Categorical_PPG": Categorical_PPG_Policy,
-    # "Gaussian_AC": Gaussian_AC_Policy,
+    "Gaussian_AC": Gaussian_AC_Policy,
     "Gaussian_AMC": Gaussian_AMC_Policy,
     "Gaussian_SAC": Gaussian_SAC_Policy,
     "Discrete_SAC": Categorical_SAC_Policy,
@@ -100,8 +100,8 @@ Policy_Inputs = {
     "QR_Q_network": ["action_space", "quantile_num", "representation", "hidden_sizes",
                      "normalize", "initialize", "activation", "device"],
     # DRL (continuous action spaces) #
-    # "Gaussian_AC": ["action_space", "representation", "actor_hidden_size", "critic_hidden_size",
-                    # "normalize", "initialize", "activation", "activation_action", "device"],
+    "Gaussian_AC": ["action_space", "representation", "actor_hidden_size", "critic_hidden_size",
+                    "normalize", "initialize", "activation", "activation_action", "device"],
     "Gaussian_AMC": ["action_space", "representation", "actor_hidden_size", "critic_hidden_size",
                     "normalize", "initialize", "activation", "activation_action", "device"],
     "Gaussian_SAC": ["action_space", "representation", "actor_hidden_size", "critic_hidden_size",
