@@ -381,6 +381,7 @@ class CBDDQN_Agent(Agent):
         self.start_greedy = config.start_greedy
         self.end_greedy = config.end_greedy
         self.egreedy = config.start_greedy
+        # new parameters
         self.beta_t = 0.0
         self.beta_max = config.beta_max
         self.beta_step = 0
@@ -442,6 +443,7 @@ class CBDDQN_Agent(Agent):
     #                 self.state_categorizer.add_to_state_buffer(next_obs[0])  # 只取环境返回的第一个元素
     #                 obs = next_obs
 
+    # ---------------------new function--------------------------------------
     def generate_initial_states(self):
         model_path = "xuance/torchAgent/agents/qlearning_family/best_model.pth"
         self.policy2.load_state_dict(torch.load(model_path, map_location=self.device))
@@ -462,7 +464,7 @@ class CBDDQN_Agent(Agent):
                 next_obs, _, _, _, _ = self.envs.step(actions)
                 self.state_categorizer.add_to_state_buffer(next_obs[0])  # 只取环境返回的第一个元素
                 obs = np.expand_dims(next_obs, axis=0)
-
+    # -----------------------------------------------------------------------------------------------
     def _action(self, obs, egreedy=0.0):
         _, argmax_action, _ = self.policy(obs)
         random_action = np.random.choice(self.action_space.n, self.n_envs)
@@ -496,7 +498,7 @@ class CBDDQN_Agent(Agent):
 
                 step_info = self.learner.update(obs_batch, act_batch, rew_batch, next_batch, terminal_batch, self.k,
                                                 self.state_categorizer)
-                step_info["epsilon-greedy"] = self.egreedy
+     +          step_info["epsilon-greedy"] = self.egreedy
                 self.log_infos(step_info, self.current_step)
 
             obs = next_obs
