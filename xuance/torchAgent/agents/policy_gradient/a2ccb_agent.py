@@ -50,6 +50,7 @@ class A2CCB_Agent(Agent):
         Buffer = DummyOnPolicyBuffer_Atari if self.atari else DummyOnPolicyBuffer
         self.buffer_size = self.n_envs * self.horizon_size
         self.batch_size = self.buffer_size // self.n_minibatch
+        print(self.action_space)
         memory = Buffer(self.observation_space,
                         self.action_space,
                         self.auxiliary_info_shape,
