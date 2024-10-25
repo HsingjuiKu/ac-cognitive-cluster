@@ -1,6 +1,7 @@
 from .pg_agent import PG_Agent
 from .ppg_agent import PPG_Agent
 from .a2c_agent import A2C_Agent
+from .a2ccb_agent import A2CCB_Agent
 from .ppokl_agent import PPOKL_Agent
 from .ppoclip_agent import PPOCLIP_Agent
 from .pdqn_agent import PDQN_Agent
