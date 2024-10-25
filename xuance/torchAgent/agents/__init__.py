@@ -27,6 +27,7 @@ Single-Agent DRL algorithms
 from .policy_gradient import (
     PG_Agent,
     A2C_Agent,
+    A2CCB_Agent,
     PPOCLIP_Agent,
     PPOKL_Agent,
     PPG_Agent,
@@ -76,6 +77,7 @@ from .multi_agent_rl import (
 REGISTRY = {
     "PG": PG_Agent,
     "A2C": A2C_Agent,
+    "A2CCB": A2CCB_Agent,
     "PPO_Clip": PPOCLIP_Agent,
     "PPO_KL": PPOKL_Agent,
     "PPG": PPG_Agent,
