@@ -79,7 +79,7 @@ class A2CCB_Agent(Agent):
         self.generate_initial_states()
     
     def generate_initial_states(self):
-        model_path = "/home/cc/ac-cognitive-cluster/models/a2c/torchAgent/BipedalWalker-v3/seed_1_2024_1023_180244/final_train_model.pth"
+        model_path = "/home/cc/ac-cognitive-cluster/models/a2c/torchAgent/BipedalWalker-v3/seed_1_2024_1025_163014/final_train_model.pth"
         self.policy2.load_state_dict(torch.load(model_path, map_location=self.device))
         self.policy2.eval()
         obs = self.envs.reset()
