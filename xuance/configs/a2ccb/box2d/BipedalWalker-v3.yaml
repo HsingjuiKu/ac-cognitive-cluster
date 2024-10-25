@@ -14,7 +14,7 @@ activation_action: 'tanh'
 
 seed: 1
 parallels: 10
-running_steps: 1000000
+running_steps: 3000000
 horizon_size: 128  # the horizon size for an environment, buffer_size = horizon_size * parallels.
 n_epoch: 5
 learning_rate: 0.0004
@@ -34,11 +34,11 @@ obsnorm_range: 5
 rewnorm_range: 5
 
 k: 2
-n_clusters: 10
+n_clusters: 4
 beta_max: 0.5
 
 test_steps: 10000
 eval_interval: 50000
 test_episode: 5
-log_dir: "./logs/a2c/"
-model_dir: "./models/a2c/"
+log_dir: "./logs/a2ccb/"
+model_dir: "./models/a2ccb/"
