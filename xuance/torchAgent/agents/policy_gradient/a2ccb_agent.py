@@ -35,7 +35,7 @@ class A2CCB_Agent(Agent):
         self.gamma = config.gamma
         self.gae_lam = config.gae_lambda
         self.clip_grad = config.clip_grad
-
+        # new parameters
         self.beta_t = 0.0
         self.beta_max = config.beta_max
         self.beta_step = 0
@@ -98,8 +98,10 @@ class A2CCB_Agent(Agent):
                 self.state_categorizer.add_to_state_buffer(next_obs[0])  # 只取环境返回的第一个元素
                 obs = np.expand_dims(next_obs, axis=0)
 
-    def _action(self, obs):
-        _, dists, vs = self.policy(obs,0)
+    def _action(self, obs, index):
+        #_, dists, vs = self.policy(obs,0)
+        observation = [obs, index]
+        _, dists, vs = self.policy(observation)
         acts = dists.stochastic_sample()
         acts = acts.detach().cpu().numpy()
         vs = vs.detach().cpu().numpy()
@@ -111,11 +113,12 @@ class A2CCB_Agent(Agent):
             step_info = {}
             self.obs_rms.update(obs)
             obs = self._process_observation(obs)
-            acts, vals = self._action(obs)
+            
+            acts, vals = self._action(obs,index)
             next_obs, rewards, terminals, trunctions, infos = self.envs.step(acts)
             self.memory.store(obs, acts, self._process_reward(rewards), vals, terminals)
             if self.memory.full:
-                _, vals = self._action(self._process_observation(next_obs))
+                _, vals = self._action(self._process_observation(next_obs),index)
                 for i in range(self.n_envs):
                     if terminals[i]:
                         self.memory.finish_path(0.0, i)
@@ -145,7 +148,7 @@ class A2CCB_Agent(Agent):
                         if terminals[i]:
                             self.memory.finish_path(0, i)
                         else:
-                            _, vals = self._action(self._process_observation(next_obs))
+                            _, vals = self._action(self._process_observation(next_obs),index)
                             self.memory.finish_path(vals[i], i)
                         self.current_episode[i] += 1
                         if self.use_wandb:
@@ -171,7 +174,7 @@ class A2CCB_Agent(Agent):
         while current_episode < test_episodes:
             self.obs_rms.update(obs)
             obs = self._process_observation(obs)
-            acts, rets = self._action(obs)
+            acts, rets = self._action(obs,index)
             next_obs, rewards, terminals, trunctions, infos = test_envs.step(acts)
             if self.config.render_mode == "rgb_array" and self.render:
                 images = test_envs.render(self.config.render_mode)
