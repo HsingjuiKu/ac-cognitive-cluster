@@ -11,6 +11,7 @@ from .learner import Learner, LearnerMAS
 from .policy_gradient import (
     PG_Learner,
     A2C_Learner,
+    A2CCB_Learner,
     PPOCLIP_Learner,
     PPOKL_Learner,
     PPG_Learner,
