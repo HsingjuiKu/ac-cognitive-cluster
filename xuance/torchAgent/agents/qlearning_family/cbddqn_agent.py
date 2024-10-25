@@ -498,7 +498,7 @@ class CBDDQN_Agent(Agent):
 
                 step_info = self.learner.update(obs_batch, act_batch, rew_batch, next_batch, terminal_batch, self.k,
                                                 self.state_categorizer)
-     +          step_info["epsilon-greedy"] = self.egreedy
+                step_info["epsilon-greedy"] = self.egreedy
                 self.log_infos(step_info, self.current_step)
 
             obs = next_obs
