@@ -69,7 +69,7 @@ class A2CCB_Agent(Agent):
                               config.ent_coef,
                               config.clip_grad)
         self.state_categorizer = StateCategorizer(
-            action_space=self.action_space.n,
+            action_space=self.action_space.shape[0],
             n_categories=getattr(config, 'n_categories', 10),
             buffer_size=10000,
             device=device
