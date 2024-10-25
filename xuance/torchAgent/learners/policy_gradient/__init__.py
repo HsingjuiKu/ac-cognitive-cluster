@@ -1,6 +1,7 @@
 from .pg_learner import PG_Learner
 from .ppg_learner import PPG_Learner
 from .a2c_learner import A2C_Learner
+from .a2ccb_learner import A2CCB_Learner
 from .ppokl_learner import PPOKL_Learner
 from .ppoclip_learner import PPOCLIP_Learner
 from .pdqn_learner import PDQN_Learner
