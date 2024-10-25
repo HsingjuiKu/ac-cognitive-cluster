@@ -78,13 +78,13 @@ class A2CCB_Agent(Agent):
         self.generate_initial_states()
     
     def generate_initial_states(self):
-        model_path = "xuance/torchAgent/agents/qlearning_family/best_model.pth"
+        model_path = "/home/cc/ac-cognitive-cluster/models/a2c/torchAgent/BipedalWalker-v3/seed_1_2024_1023_180244/final_train_model.pth"
         self.policy2.load_state_dict(torch.load(model_path, map_location=self.device))
         self.policy2.eval()
         obs = self.envs.reset()
         for _ in tqdm(range(10000)):
             with torch.no_grad():
-                _, action, _ = self.policy2(obs[0],0)  # 直接使用原始的obs[0]
+                _, action, _ = self.policy2([obs[0],0])  # 直接使用原始的obs[0]
                 action = action.cpu().numpy()
 
                 if action.ndim == 0:
