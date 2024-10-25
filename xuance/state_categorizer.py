@@ -160,6 +160,14 @@ class StateCategorizer:
             nearest_category = torch.argmin(distances).item()
             self.state_categories[state_tuple] = nearest_category
             return nearest_category
+            
+    def get_categories_batch(self, states_batch):
+        """Get categories for a batch of states."""
+        categories = []
+        for state in states_batch:
+            category = self.get_category(state)
+            categories.append(category)
+        return torch.tensor(categories, device=self.device)
 
     def update_action_counts(self, state, action):
         category = self.get_category(state)
