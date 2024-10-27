@@ -86,7 +86,7 @@ class A2CCB_Agent(Agent):
         for _ in tqdm(range(10000)):
             with torch.no_grad():
                 _, action, _ = self.policy2([obs[0],0])  # 直接使用原始的obs[0]
-                acts = action.stochastc_sample()
+                acts = action.stochastic_sample()
                 acts = acts.detach().cpu().numpy()
                 # action = action.cpu().numpy()
 
