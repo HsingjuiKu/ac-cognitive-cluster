@@ -85,7 +85,7 @@ class A2CCB_Agent(Agent):
         obs = self.envs.reset()
         for _ in tqdm(range(10000)):
             with torch.no_grad():
-                _, action, _ = self.policy2([obs[0],0])  # 直接使用原始的obs[0]
+                _, action, _ = self.policy2([obs,0])  # 直接使用原始的obs[0]
                 acts = action.stochastic_sample()
                 acts = acts.detach().cpu().numpy()
                 # action = action.cpu().numpy()
@@ -98,7 +98,7 @@ class A2CCB_Agent(Agent):
                 #     raise ValueError(f"Unexpected action shape: {action.shape}")
 
                 next_obs, _, _, _, _ = self.envs.step(acts)
-                self.state_categorizer.add_to_state_buffer(next_obs[0])  # 只取环境返回的第一个元素
+                self.state_categorizer.add_to_state_buffer(next_obs)  # 只取环境返回的第一个元素
                 obs = np.expand_dims(next_obs, axis=0)
 
     def _action(self, obs, index):
