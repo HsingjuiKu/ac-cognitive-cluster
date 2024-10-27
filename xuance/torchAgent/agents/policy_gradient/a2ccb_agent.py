@@ -83,8 +83,6 @@ class A2CCB_Agent(Agent):
         self.policy2.load_state_dict(torch.load(model_path, map_location=self.device))
         self.policy2.eval()
         obs = self.envs.reset()
-        print(obs)
-        print(obs.shape)
         for _ in tqdm(range(10000)):
             with torch.no_grad():
                 obs = self._process_observation(obs)
