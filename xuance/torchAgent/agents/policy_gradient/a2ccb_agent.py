@@ -50,7 +50,7 @@ class A2CCB_Agent(Agent):
         Buffer = DummyOnPolicyBuffer_Atari if self.atari else DummyOnPolicyBuffer
         self.buffer_size = self.n_envs * self.horizon_size
         self.batch_size = self.buffer_size // self.n_minibatch
-        print(self.action_space)
+        # print(self.action_space)
         memory = Buffer(self.observation_space,
                         self.action_space,
                         self.auxiliary_info_shape,
@@ -83,10 +83,12 @@ class A2CCB_Agent(Agent):
         self.policy2.load_state_dict(torch.load(model_path, map_location=self.device))
         self.policy2.eval()
         obs = self.envs.reset()
+        print(obs)
+        print(obs.shape)
         for _ in tqdm(range(10000)):
             with torch.no_grad():
                 obs = self._process_observation(obs)
-                _, action, _ = self.policy2([obs,0])  # 直接使用原始的obs[0]
+                _, action, _ = self.policy2([obs[0],0])  # 直接使用原始的obs[0]
                 acts = action.stochastic_sample()
                 acts = acts.detach().cpu().numpy()
                 # action = action.cpu().numpy()
@@ -99,7 +101,7 @@ class A2CCB_Agent(Agent):
                 #     raise ValueError(f"Unexpected action shape: {action.shape}")
 
                 next_obs, _, _, _, _ = self.envs.step(acts)
-                self.state_categorizer.add_to_state_buffer(next_obs)  # 只取环境返回的第一个元素
+                self.state_categorizer.add_to_state_buffer(next_obs[0])  # 只取环境返回的第一个元素
                 obs = np.expand_dims(next_obs, axis=0)
 
     def _action(self, obs, index):
@@ -113,6 +115,7 @@ class A2CCB_Agent(Agent):
 
     def train(self, train_steps):
         obs = self.envs.buf_obs
+        print(obs)
         for _ in tqdm(range(train_steps)):
             step_info = {}
             self.obs_rms.update(obs)
