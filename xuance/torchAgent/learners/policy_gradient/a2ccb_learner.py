@@ -32,7 +32,7 @@ class A2CCB_Learner(Learner):
         unique_indices = torch.unique(index)
         for i in unique_indices:
             sub_obs = obs_batch[index==i,:]
-            print(obs_batch.shape)
+            print(sub_obs.shape)
         outputs, a_dist, v_pred = self.policy([obs_batch,0])
         log_prob = a_dist.log_prob(act_batch)
 
