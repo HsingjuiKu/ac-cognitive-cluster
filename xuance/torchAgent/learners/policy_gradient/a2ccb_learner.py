@@ -20,9 +20,12 @@ class A2CCB_Learner(Learner):
 
     def update(self, obs_batch, act_batch, ret_batch, adv_batch):
         self.iterations += 1
+        print(obs_batch.shape)
+        print(obs_batch)
         act_batch = torch.as_tensor(act_batch, device=self.device)
         ret_batch = torch.as_tensor(ret_batch, device=self.device)
         adv_batch = torch.as_tensor(adv_batch, device=self.device)
+        
         outputs, a_dist, v_pred = self.policy([obs_batch,0])
         log_prob = a_dist.log_prob(act_batch)
 
