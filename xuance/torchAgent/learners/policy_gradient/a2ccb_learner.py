@@ -18,8 +18,9 @@ class A2CCB_Learner(Learner):
         self.ent_coef = ent_coef
         self.clip_grad = clip_grad
 
-    def update(self, obs_batch, act_batch, ret_batch, adv_batch):
+    def update(self, obs_batch, act_batch, ret_batch, adv_batch,index):
         self.iterations += 1
+        print(index)
         act_batch = torch.as_tensor(act_batch, device=self.device)
         ret_batch = torch.as_tensor(ret_batch, device=self.device)
         adv_batch = torch.as_tensor(adv_batch, device=self.device)
