@@ -134,9 +134,11 @@ class A2CCB_Agent(Agent):
                         end = start + self.batch_size
                         sample_idx = indexes[start:end]
                         obs_batch, act_batch, ret_batch, _, adv_batch, _ = self.memory.sample(sample_idx)
+                        
+                        # Get the index based on categories
                         index = self.state_categorizer.get_categories_batch(obs_batch)
-                        print(index.shape)
-                        step_info = self.learner.update(obs_batch, act_batch, ret_batch, adv_batch)
+            
+                        step_info = self.learner.update(obs_batch, act_batch, ret_batch, adv_batch,index)
                 self.log_infos(step_info, self.current_step)
                 self.memory.clear()
 
