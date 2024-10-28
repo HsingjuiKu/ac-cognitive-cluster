@@ -111,14 +111,12 @@ class A2CCB_Agent(Agent):
         return acts, vs
 
     def train(self, train_steps):
+        index = 0
         obs = self.envs.buf_obs
-        print(obs)
         for _ in tqdm(range(train_steps)):
             step_info = {}
             self.obs_rms.update(obs)
             obs = self._process_observation(obs)
-            index = self.state_categorizer.get_category(obs)
-            print(index)
             acts, vals = self._action(obs,index)
             next_obs, rewards, terminals, trunctions, infos = self.envs.step(acts)
             self.memory.store(obs, acts, self._process_reward(rewards), vals, terminals)
