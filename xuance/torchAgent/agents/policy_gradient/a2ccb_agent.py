@@ -119,6 +119,7 @@ class A2CCB_Agent(Agent):
             obs = self._process_observation(obs)
             acts, vals = self._action(obs,index)
             next_obs, rewards, terminals, trunctions, infos = self.envs.step(acts)
+                        
             self.memory.store(obs, acts, self._process_reward(rewards), vals, terminals)
             if self.memory.full:
                 _, vals = self._action(self._process_observation(next_obs),index)
