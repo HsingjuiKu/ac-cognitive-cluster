@@ -24,6 +24,8 @@ class A2CCB_Learner(Learner):
         act_batch = torch.as_tensor(act_batch, device=self.device)
         ret_batch = torch.as_tensor(ret_batch, device=self.device)
         adv_batch = torch.as_tensor(adv_batch, device=self.device)
+        index = torch.as_tensor(index, device = self.device)
+        obs_batch = torch.as_tensor(obs_batch, device = self.device)
         
         # Get unique categories from index
         unique_indices = torch.unique(index)
