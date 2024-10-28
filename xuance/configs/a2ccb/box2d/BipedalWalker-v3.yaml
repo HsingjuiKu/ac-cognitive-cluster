@@ -35,7 +35,7 @@ obsnorm_range: 5
 rewnorm_range: 5
 
 k: 2
-n_clusters: 4
+n_clusters: 3
 beta_max: 0.5
 
 test_steps: 10000
