@@ -28,7 +28,7 @@ class A2CCB_Learner(Learner):
         obs_batch = torch.as_tensor(obs_batch, device = self.device)
         
         # Get unique categories from index
-        print(index)
+
         unique_indices = torch.unique(index)
         for i in unique_indices:
             sub_obs = obs_batch[index==i,:]
