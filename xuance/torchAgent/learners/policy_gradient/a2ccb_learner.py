@@ -33,20 +33,20 @@ class A2CCB_Learner(Learner):
         v_pred_subcritic = []
         time = 0
         
-        if state_categorizer.initialized:
-            # Get unique categories from index
-            unique_indices = torch.unique(index)
-            for i in unique_indices:
-                sub_obs = obs_batch[index==i,:]
-                if sub_obs.shape[0] != 0:
-                    _,_,v_pred = self.policy([sub_obs,int(i+1)])
-                    v_pred_subcritic.append(v_pred)
-            v_pred_mean = torch.cat(v_pred_subcritic, dim=0)
-            beta_dynamic = min(0 + 0.00001 * times, 1)
-            times += 1
-            v_pred_combined = beta_dynamic * v_pred_mean + (1-beta_dynamic) * v_pred_original
-        else:
-            v_pred_combined = v_pred_original
+        # if state_categorizer.initialized:
+        # Get unique categories from index
+        unique_indices = torch.unique(index)
+        for i in unique_indices:
+            sub_obs = obs_batch[index==i,:]
+            if sub_obs.shape[0] != 0:
+                _,_,v_pred = self.policy([sub_obs,int(i+1)])
+                v_pred_subcritic.append(v_pred)
+        v_pred_mean = torch.cat(v_pred_subcritic, dim=0)
+        beta_dynamic = min(0 + 0.00001 * times, 1)
+        times += 1
+        v_pred_combined = beta_dynamic * v_pred_mean + (1-beta_dynamic) * v_pred_original
+        # else:
+        #     v_pred_combined = v_pred_original
             
         a_loss = -(adv_batch * log_prob).mean()
         c_loss = F.mse_loss(v_pred_combined, ret_batch)
