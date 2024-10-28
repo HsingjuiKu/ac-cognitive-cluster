@@ -31,7 +31,7 @@ class A2CCB_Learner(Learner):
         outputs, a_dist, v_pred_original = self.policy([obs_batch,0])
         log_prob = a_dist.log_prob(act_batch)
         v_pred_subcritic = []
-        time = 0
+        times = 0
         
         # if state_categorizer.initialized:
         # Get unique categories from index
