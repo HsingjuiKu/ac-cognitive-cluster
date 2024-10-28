@@ -70,7 +70,7 @@ class A2CCB_Agent(Agent):
                               config.clip_grad)
         self.state_categorizer = StateCategorizer(
             action_dim=self.action_space.shape[0],
-            n_categories=getattr(config, 'n_categories'),
+            n_categories=getattr(config, 'n_clusters'),
             buffer_size=10000,
             device=device
         )
