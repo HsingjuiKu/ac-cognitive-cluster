@@ -20,8 +20,8 @@ class A2CCB_Learner(Learner):
 
     def update(self, obs_batch, act_batch, ret_batch, adv_batch):
         self.iterations += 1
-        print(obs_batch.shape)
-        print(obs_batch)
+        index = self.state_categorizer.get_categories_batch(obs_batch)
+        print(index)
         act_batch = torch.as_tensor(act_batch, device=self.device)
         ret_batch = torch.as_tensor(ret_batch, device=self.device)
         adv_batch = torch.as_tensor(adv_batch, device=self.device)
