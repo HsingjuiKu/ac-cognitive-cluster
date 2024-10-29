@@ -34,13 +34,22 @@ class A2CCB_Learner(Learner):
         times = 0
         
         # if state_categorizer.initialized:
-        # Get unique categories from index
+        # 创建与 obs_batch 大小相同的零张量，用于存储 v_pred 值
+        v_pred_subcritic = torch.zeros(obs_batch.shape[0])
+        
+        # 获取 index 中的唯一类别
         unique_indices = torch.unique(index)
+        
+        # 对每个唯一类别进行迭代
         for i in unique_indices:
-            sub_obs = obs_batch[index==i,:]
+            # 获取对应类别的子集
+            sub_obs = obs_batch[index == i, :]
             if sub_obs.shape[0] != 0:
-                _,_,v_pred = self.policy([sub_obs,int(i+1)])
-                v_pred_subcritic.append(v_pred)
+                # 计算 v_pred
+                _, _, v_pred = self.policy([sub_obs, int(i + 1)])
+                # 将 v_pred 赋值到对应位置
+                v_pred_subcritic[index == i] = v_pred.squeeze()
+                
         v_pred_mean = torch.cat(v_pred_subcritic, dim=0)
         beta_dynamic = min(0 + 0.00001 * times, 1)
         times += 1
