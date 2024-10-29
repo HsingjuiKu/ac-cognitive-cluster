@@ -49,12 +49,10 @@ class A2CCB_Learner(Learner):
                 _, _, v_pred = self.policy([sub_obs, int(i + 1)])
                 # 将 v_pred 赋值到对应位置
                 v_pred_subcritic[index == i] = v_pred.squeeze()
-                print(v_pred_subcritic)
-                
-        v_pred_mean = torch.cat(v_pred_subcritic, dim=0).to
+                # print(v_pred_subcritic)
         beta_dynamic = min(0 + 0.00001 * times, 1)
         times += 1
-        v_pred_combined = beta_dynamic * v_pred_mean + (1-beta_dynamic) * v_pred_original
+        v_pred_combined = beta_dynamic * v_pred_subcritic + (1-beta_dynamic) * v_pred_original
         # else:
         #     v_pred_combined = v_pred_original
             
