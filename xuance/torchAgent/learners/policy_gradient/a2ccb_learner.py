@@ -35,7 +35,7 @@ class A2CCB_Learner(Learner):
         
         # if state_categorizer.initialized:
         # 创建与 obs_batch 大小相同的零张量，用于存储 v_pred 值
-        v_pred_subcritic = torch.zeros(obs_batch.shape[0],device=device)
+        v_pred_subcritic = torch.zeros(obs_batch.shape[0],device=self.device)
         
         # 获取 index 中的唯一类别
         unique_indices = torch.unique(index)
