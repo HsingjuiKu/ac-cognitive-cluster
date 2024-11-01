@@ -31,7 +31,6 @@ class A2CCB_Learner(Learner):
         outputs, a_dist, v_pred_original = self.policy([obs_batch,0])
         log_prob = a_dist.log_prob(act_batch)
         v_pred_subcritic = []
-        times = 0
         
         # if state_categorizer.initialized:
         # 创建与 obs_batch 大小相同的零张量，用于存储 v_pred 值
@@ -50,8 +49,8 @@ class A2CCB_Learner(Learner):
                 # 将 v_pred 赋值到对应位置
                 v_pred_subcritic[index == i] = v_pred.squeeze()
                 # print(v_pred_subcritic)
-        beta_dynamic = min(0 + 1/5000000 * times, 1)
-        times += 1
+        beta_dynamic = min(0 + 1/2500000 * self.iterations, 1)
+ 
         v_pred_combined = beta_dynamic * v_pred_subcritic + (1-beta_dynamic) * v_pred_original
         # else:
         #     v_pred_combined = v_pred_original
