@@ -50,7 +50,7 @@ class A2CCB_Learner(Learner):
                 # 将 v_pred 赋值到对应位置
                 v_pred_subcritic[index == i] = v_pred.squeeze()
                 # print(v_pred_subcritic)
-        beta_dynamic = min(0 + 0.00001 * times, 1)
+        beta_dynamic = min(0 + 1/5000000 * times, 1)
         times += 1
         v_pred_combined = beta_dynamic * v_pred_subcritic + (1-beta_dynamic) * v_pred_original
         # else:
