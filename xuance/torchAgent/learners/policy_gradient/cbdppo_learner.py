@@ -21,7 +21,7 @@ class CBDPPO_Learner(Learner):
         self.clip_grad_norm = clip_grad_norm
         self.use_grad_clip = use_grad_clip
 
-    def update(self, obs_batch, act_batch, ret_batch, value_batch, adv_batch, old_logp):
+    def update(self, obs_batch, act_batch, ret_batch, value_batch, adv_batch, old_logp,index_batch):
         self.iterations += 1
         act_batch = torch.as_tensor(act_batch, device=self.device)
         ret_batch = torch.as_tensor(ret_batch, device=self.device)
