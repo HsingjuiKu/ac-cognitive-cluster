@@ -14,7 +14,7 @@ class CBDPPO_Learner(Learner):
                  clip_grad_norm: float = 0.25,
                  use_grad_clip: bool = True,
                  ):
-        super(PPOCLIP_Learner, self).__init__(policy, optimizer, scheduler, device, model_dir)
+        super(CBDPPO_Learner, self).__init__(policy, optimizer, scheduler, device, model_dir)
         self.vf_coef = vf_coef
         self.ent_coef = ent_coef
         self.clip_range = clip_range
