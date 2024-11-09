@@ -80,6 +80,7 @@ REGISTRY = {
     "A2C": A2C_Agent,
     "A2CCB": A2CCB_Agent,
     "PPO_Clip": PPOCLIP_Agent,
+    "CBDPPO": CBDPPO_Agent,
     "PPO_KL": PPOKL_Agent,
     "PPG": PPG_Agent,
     "DDPG": DDPG_Agent,
