@@ -68,17 +68,18 @@ class PPOCLIP_Agent(Agent):
         return acts, vs, logps
 
     def train(self, train_steps):
+        index = 0
         obs = self.envs.buf_obs
         for _ in tqdm(range(train_steps)):
             step_info = {}
             self.obs_rms.update(obs)
             obs = self._process_observation(obs)
-            acts, value, logps = self._action(obs)
+            acts, value, logps = self._action(obs,index)
             next_obs, rewards, terminals, trunctions, infos = self.envs.step(acts)
 
             self.memory.store(obs, acts, self._process_reward(rewards), value, terminals, {"old_logp": logps})
             if self.memory.full:
-                _, vals, _ = self._action(self._process_observation(next_obs))
+                _, vals, _ = self._action(self._process_observation(next_obs),index)
                 for i in range(self.n_envs):
                     if terminals[i]:
                         self.memory.finish_path(0.0, i)
@@ -107,7 +108,7 @@ class PPOCLIP_Agent(Agent):
                         if terminals[i]:
                             self.memory.finish_path(0.0, i)
                         else:
-                            _, vals, _ = self._action(self._process_observation(next_obs))
+                            _, vals, _ = self._action(self._process_observation(next_obs),index)
                             self.memory.finish_path(vals[i], i)
                         obs[i] = infos[i]["reset_obs"]
                         self.current_episode[i] += 1
@@ -135,7 +136,7 @@ class PPOCLIP_Agent(Agent):
         while current_episode < test_episode:
             self.obs_rms.update(obs)
             obs = self._process_observation(obs)
-            acts, rets, logps = self._action(obs)
+            acts, rets, logps = self._action(obs,index)
             next_obs, rewards, terminals, trunctions, infos = test_envs.step(acts)
             if self.config.render_mode == "rgb_array" and self.render:
                 images = test_envs.render(self.config.render_mode)
