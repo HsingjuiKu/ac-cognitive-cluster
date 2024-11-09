@@ -66,6 +66,12 @@ class CBDPPO_Agent(Agent):
                                   clip_range=config.clip_range,
                                   clip_grad_norm=config.clip_grad_norm,
                                   use_grad_clip=config.use_grad_clip)
+        self.state_categorizer = StateCategorizer(
+            action_dim=self.action_space.shape[0],
+            n_categories=getattr(config, 'n_clusters'),
+            buffer_size=10000,
+            device=device
+        )
         super(CBDPPO_Agent, self).__init__(config, envs, policy, memory, learner, device,
                                             config.log_dir, config.model_dir)
 
