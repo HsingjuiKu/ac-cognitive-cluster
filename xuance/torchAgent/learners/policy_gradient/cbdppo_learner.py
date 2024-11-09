@@ -32,13 +32,32 @@ class CBDPPO_Learner(Learner):
         outputs, a_dist, v_pred = self.policy([obs_batch,0])
         log_prob = a_dist.log_prob(act_batch)
 
+        # 创建与 obs_batch 大小相同的零张量，用于存储 v_pred 值
+        v_pred_subcritic = torch.zeros(obs_batch.shape[0],device=self.device)
+        
+        # 获取 index 中的唯一类别
+        unique_indices = torch.unique(index)
+        
+        # 对每个唯一类别进行迭代
+        for i in unique_indices:
+            # 获取对应类别的子集
+            sub_obs = obs_batch[index == i, :]
+            if sub_obs.shape[0] != 0:
+                # 计算 v_pred
+                _, _, v_pred = self.policy([sub_obs, int(i + 1)])
+                # 将 v_pred 赋值到对应位置
+                v_pred_subcritic[index == i] = v_pred.squeeze()
+                # print(v_pred_subcritic)
+        beta_dynamic = min(0 + 1/2500000 * self.iterations, 1)
+ 
+        v_pred_combined = beta_dynamic * v_pred_subcritic + (1-beta_dynamic) * v_pred_original
         # ppo-clip core implementations 
         ratio = (log_prob - old_logp_batch).exp().float()
         surrogate1 = ratio.clamp(1.0 - self.clip_range, 1.0 + self.clip_range) * adv_batch
         surrogate2 = adv_batch * ratio
         a_loss = -torch.minimum(surrogate1, surrogate2).mean()
 
-        c_loss = F.mse_loss(v_pred, ret_batch)
+        c_loss = F.mse_loss(v_pred_combined, ret_batch)
 
         e_loss = a_dist.entropy().mean()
         loss = a_loss - self.ent_coef * e_loss + self.vf_coef * c_loss
