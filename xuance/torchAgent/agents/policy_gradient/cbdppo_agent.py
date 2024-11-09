@@ -74,6 +74,7 @@ class CBDPPO_Agent(Agent):
         )
         super(CBDPPO_Agent, self).__init__(config, envs, policy, memory, learner, device,
                                             config.log_dir, config.model_dir)
+        self.generate_initial_states()
 
     def _action(self, obs):
         _, dists, vs = self.policy(obs)
