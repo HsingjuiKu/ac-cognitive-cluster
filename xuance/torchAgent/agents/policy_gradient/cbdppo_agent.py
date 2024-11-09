@@ -76,7 +76,7 @@ class CBDPPO_Agent(Agent):
                                             config.log_dir, config.model_dir)
         self.generate_initial_states()
     def generate_initial_states(self):
-        model_path = "/home/cc/ac-cognitive-cluster/models/a2c/torchAgent/BipedalWalker-v3/seed_1_2024_1028_212516/final_train_model.pth"
+        model_path = "/home/cc/ac-cognitive-cluster/models/ppo/torchAgent/Ant-v4/seed_123_2024_1108_202018/final_train_model.pth"
         self.policy2.load_state_dict(torch.load(model_path, map_location=self.device))
         self.policy2.eval()
         obs = self.envs.reset()
