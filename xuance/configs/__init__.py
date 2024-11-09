@@ -26,6 +26,7 @@ method_list = {
     'pg': ['box2d', 'classic_control', 'mujoco'],
     'ppg': ['box2d', 'classic_control', 'mujoco'],
     'ppo': ['box2d', 'classic_control', 'atari', 'mujoco'],
+    'cbdppo': ['box2d', 'classic_control', 'atari', 'mujoco'],
     'qmix': ['football', 'mpe', 'sc2'],
     'qrdqn': ['box2d', 'classic_control', 'atari'],
     'qtran': ['mpe'],
