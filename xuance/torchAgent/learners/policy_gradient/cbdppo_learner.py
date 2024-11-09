@@ -1,4 +1,7 @@
 from xuance.torchAgent.learners import *
+from xuance.state_categorizer import StateCategorizer
+import numpy as np
+import torch
 
 
 class CBDPPO_Learner(Learner):
