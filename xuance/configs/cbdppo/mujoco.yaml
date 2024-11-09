@@ -1,4 +1,4 @@
-agent: "PPO_Clip"  # choice: PPO_Clip, PPO_KL
+agent: "CBDPPO"  # choice: PPO_Clip, PPO_KL
 env_name: "MuJoCo"
 env_id: "Ant-v4"
 vectorize: "Dummy_Gym"
