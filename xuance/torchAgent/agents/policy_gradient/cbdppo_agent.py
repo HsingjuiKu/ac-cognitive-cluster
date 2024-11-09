@@ -77,7 +77,7 @@ class CBDPPO_Agent(Agent):
         self.generate_initial_states()
 
     def _action(self, obs):
-        _, dists, vs = self.policy(obs)
+        _, dists, vs = self.policy([obs,0])
         acts = dists.stochastic_sample()
         logps = dists.log_prob(acts)
         vs = vs.detach().cpu().numpy()
