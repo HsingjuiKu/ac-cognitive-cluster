@@ -57,8 +57,9 @@ class PPOCLIP_Agent(Agent):
         super(PPOCLIP_Agent, self).__init__(config, envs, policy, memory, learner, device,
                                             config.log_dir, config.model_dir)
 
-    def _action(self, obs):
-        _, dists, vs = self.policy(obs)
+    def _action(self, obs,index):
+        obsearvation = [obs,index]
+        _, dists, vs = self.policy(obsearvation)
         acts = dists.stochastic_sample()
         logps = dists.log_prob(acts)
         vs = vs.detach().cpu().numpy()
