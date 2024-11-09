@@ -33,7 +33,7 @@ class CBDPPO_Learner(Learner):
         old_logp_batch = torch.as_tensor(old_logp, device=self.device)
         obs_batch = torch.as_tensor(obs_batch,device=self.device)
 
-        outputs, a_dist, v_pred = self.policy([obs_batch,0])
+        outputs, a_dist, v_pred_original = self.policy([obs_batch,0])
         log_prob = a_dist.log_prob(act_batch)
 
         # 创建与 obs_batch 大小相同的零张量，用于存储 v_pred 值
