@@ -112,7 +112,7 @@ class CBDPPO_Agent(Agent):
 
             self.memory.store(obs, acts, self._process_reward(rewards), value, terminals, {"old_logp": logps})
             if self.memory.full:
-                _, vals, _ = self._action(self._process_observation(next_obs))
+                _, vals, _ = self._action(self._process_observation(next_obs),index)
                 for i in range(self.n_envs):
                     if terminals[i]:
                         self.memory.finish_path(0.0, i)
@@ -145,7 +145,7 @@ class CBDPPO_Agent(Agent):
                         if terminals[i]:
                             self.memory.finish_path(0.0, i)
                         else:
-                            _, vals, _ = self._action(self._process_observation(next_obs))
+                            _, vals, _ = self._action(self._process_observation(next_obs),index)
                             self.memory.finish_path(vals[i], i)
                         obs[i] = infos[i]["reset_obs"]
                         self.current_episode[i] += 1
