@@ -81,7 +81,7 @@ class CBDPPO_Learner(Learner):
             "critic-loss": c_loss.item(),
             "entropy": e_loss.item(),
             "learning_rate": lr,
-            "predict_value": v_pred.mean().item(),
+            "predict_value": v_pred_combined.mean().item(),
             "clip_ratio": cr
         }
 
