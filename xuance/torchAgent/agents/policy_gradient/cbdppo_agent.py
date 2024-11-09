@@ -75,9 +75,24 @@ class CBDPPO_Agent(Agent):
         super(CBDPPO_Agent, self).__init__(config, envs, policy, memory, learner, device,
                                             config.log_dir, config.model_dir)
         self.generate_initial_states()
+    def generate_initial_states(self):
+        model_path = "/home/cc/ac-cognitive-cluster/models/a2c/torchAgent/BipedalWalker-v3/seed_1_2024_1028_212516/final_train_model.pth"
+        self.policy2.load_state_dict(torch.load(model_path, map_location=self.device))
+        self.policy2.eval()
+        obs = self.envs.reset()
+        for _ in tqdm(range(10000)):
+            with torch.no_grad():
+                _, action, _ = self.policy2([obs[0],0])  # 直接使用原始的obs[0]
+                acts = action.stochastic_sample()
+                acts = acts.detach().cpu().numpy()
 
-    def _action(self, obs):
-        _, dists, vs = self.policy([obs,0])
+                next_obs, _, _, _, _ = self.envs.step(acts)
+                self.state_categorizer.add_to_state_buffer(next_obs[0])  # 只取环境返回的第一个元素
+                obs = np.expand_dims(next_obs, axis=0)
+
+    def _action(self, obs,index):
+        observation = [obs,index]
+        _, dists, vs = self.policy(observation)
         acts = dists.stochastic_sample()
         logps = dists.log_prob(acts)
         vs = vs.detach().cpu().numpy()
