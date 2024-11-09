@@ -29,7 +29,7 @@ class PPOCLIP_Learner(Learner):
         adv_batch = torch.as_tensor(adv_batch, device=self.device)
         old_logp_batch = torch.as_tensor(old_logp, device=self.device)
 
-        outputs, a_dist, v_pred = self.policy(obs_batch)
+        outputs, a_dist, v_pred = self.policy([obs_batch,0])
         log_prob = a_dist.log_prob(act_batch)
 
         # ppo-clip core implementations 
