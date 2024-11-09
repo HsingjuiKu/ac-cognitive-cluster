@@ -1,7 +1,7 @@
 from xuance.torchAgent.agents import *
 
 
-class PPOCLIP_Agent(Agent):
+class CBDPPO_Agent(Agent):
     """The implementation of PPO agent.
 
     Args:
