@@ -44,7 +44,7 @@ class CBDPPO_Agent(Agent):
                         config.use_advnorm,
                         self.gamma,
                         self.gae_lam)
-        learner = PPOCLIP_Learner(policy,
+        learner = CBDPPO_Learner(policy,
                                   optimizer,
                                   scheduler,
                                   config.device,
@@ -54,7 +54,7 @@ class CBDPPO_Agent(Agent):
                                   clip_range=config.clip_range,
                                   clip_grad_norm=config.clip_grad_norm,
                                   use_grad_clip=config.use_grad_clip)
-        super(PPOCLIP_Agent, self).__init__(config, envs, policy, memory, learner, device,
+        super(CBDPPO_Agent, self).__init__(config, envs, policy, memory, learner, device,
                                             config.log_dir, config.model_dir)
 
     def _action(self, obs):
