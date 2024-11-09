@@ -30,7 +30,6 @@ class A2CCB_Learner(Learner):
         # Get the predict v from original critic net
         outputs, a_dist, v_pred_original = self.policy([obs_batch,0])
         log_prob = a_dist.log_prob(act_batch)
-        v_pred_subcritic = []
         
         # if state_categorizer.initialized:
         # 创建与 obs_batch 大小相同的零张量，用于存储 v_pred 值
