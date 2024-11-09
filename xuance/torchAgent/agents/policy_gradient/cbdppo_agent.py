@@ -101,12 +101,13 @@ class CBDPPO_Agent(Agent):
         return acts, vs, logps
 
     def train(self, train_steps):
+        index = 0
         obs = self.envs.buf_obs
         for _ in tqdm(range(train_steps)):
             step_info = {}
             self.obs_rms.update(obs)
             obs = self._process_observation(obs)
-            acts, value, logps = self._action(obs)
+            acts, value, logps = self._action(obs,index)
             next_obs, rewards, terminals, trunctions, infos = self.envs.step(acts)
 
             self.memory.store(obs, acts, self._process_reward(rewards), value, terminals, {"old_logp": logps})
@@ -124,7 +125,11 @@ class CBDPPO_Agent(Agent):
                         end = start + self.batch_size
                         sample_idx = indexes[start:end]
                         obs_batch, act_batch, ret_batch, value_batch, adv_batch, aux_batch = self.memory.sample(sample_idx)
-                        step_info = self.learner.update(obs_batch, act_batch, ret_batch, value_batch, adv_batch, aux_batch['old_logp'])
+
+                        # Get the index based on categories
+                        idx_batch = self.state_categorizer.get_categories_batch(obs_batch)
+                        
+                        step_info = self.learner.update(obs_batch, act_batch, ret_batch, value_batch, adv_batch, aux_batch['old_logp'],idx_batch)
                 self.log_infos(step_info, self.current_step)
                 self.memory.clear()
 
