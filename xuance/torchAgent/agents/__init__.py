@@ -38,7 +38,8 @@ from .policy_gradient import (
     SPDQN_Agent,
     SAC_Agent,
     SACDIS_Agent,
-    CBDSAC_Agent
+    CBDSAC_Agent,
+    CBDPPO_Agent
 )
 from .qlearning_family import (
     DQN_Agent,
