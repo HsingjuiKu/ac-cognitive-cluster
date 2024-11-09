@@ -35,6 +35,14 @@ class CBDPPO_Agent(Agent):
         self.action_space = envs.action_space
         self.auxiliary_info_shape = {"old_logp": ()}
 
+        # new parameters
+        self.beta_t = 0.0
+        self.beta_max = config.beta_max
+        self.beta_step = 0
+        self.k = config.k
+        self.policy2 = policy
+        self.frequency = 0
+                     
         self.atari = True if config.env_name == "Atari" else False
         Buffer = DummyOnPolicyBuffer_Atari if self.atari else DummyOnPolicyBuffer
         self.buffer_size = self.n_envs * self.horizon_size
