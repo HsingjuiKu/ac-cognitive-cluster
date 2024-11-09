@@ -31,6 +31,7 @@ class CBDPPO_Learner(Learner):
         value_batch = torch.as_tensor(value_batch, device=self.device)
         adv_batch = torch.as_tensor(adv_batch, device=self.device)
         old_logp_batch = torch.as_tensor(old_logp, device=self.device)
+        obs_batch = torch.as_tensor(obs_batch,device=self.device)
 
         outputs, a_dist, v_pred = self.policy([obs_batch,0])
         log_prob = a_dist.log_prob(act_batch)
